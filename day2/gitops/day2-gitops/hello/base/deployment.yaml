@@ -1,0 +1,49 @@
+# Day 1 結束時的 hello-deployment，加上 Day 2 M2 的 PVC
+# image 只寫 hello：registry 與 tag 由 overlay 的 images 填入
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: hello
+      run: deployment
+  template:
+    metadata:
+      labels:
+        app: hello
+        run: deployment
+    spec:
+      containers:
+      - name: hello
+        image: hello
+        command: ["python", "app.py"]
+        envFrom:
+        - configMapRef:
+            name: hello-env          # overlay 的 configMapGenerator 會改成 hello-env-<hash>
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet: {path: /, port: 80}
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet: {path: /, port: 80}
+          periodSeconds: 10
+        resources:
+          requests: {cpu: 100m, memory: 64Mi}
+          limits:   {cpu: 500m, memory: 128Mi}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: hello-data

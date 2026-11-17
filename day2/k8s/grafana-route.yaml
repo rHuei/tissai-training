@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  parentRefs:
+  - name: shared-gw
+    namespace: gateway
+  hostnames:
+  - grafana.tiss.internal
+  rules:
+  - backendRefs:
+    - name: kube-prometheus-stack-grafana   # 依 Helm release 名稱調整
+      port: 80

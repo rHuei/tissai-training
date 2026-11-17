@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-env
+data:
+  NAME: K8S
+  VERSION: v5

@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hello-rules
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack   # 依 Helm release 名稱調整
+spec:
+  groups:
+  - name: hello
+    rules:
+    - alert: HelloPodRestarting
+      expr: |
+        increase(kube_pod_container_status_restarts_total{
+          namespace="fg01"}[15m]) > 3
+      for: 5m
+      labels: {severity: warning}
+      annotations:
+        summary: "{{ $labels.pod }} 15 分鐘內重啟超過 3 次"

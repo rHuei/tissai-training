@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello
+      run: deployment
+  template:
+    metadata:
+      labels:
+        app: hello
+        run: deployment
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v3
+        command: ["python", "app.py"]
+        ports:
+        - containerPort: 80

@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-hello
+  namespace: fg01
+spec:
+  podSelector:
+    matchLabels: {app: hello}
+  policyTypes: [Ingress]
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels: {role: client}
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: gateway   # kgateway 的 proxy Pod
+    ports:
+    - port: 80

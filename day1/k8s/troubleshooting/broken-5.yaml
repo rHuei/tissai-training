@@ -1,0 +1,25 @@
+# 加分題：CreateContainerConfigError（引用的 ConfigMap key 不存在）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-5
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: broken-5}
+  template:
+    metadata:
+      labels: {app: broken-5}
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v5
+        command: ["python", "app.py"]
+        env:
+        - name: NAME
+          valueFrom:
+            configMapKeyRef:
+              name: hello-env
+              key: USERNAME                # 錯誤：hello-env 只有 NAME、VERSION
+        ports:
+        - containerPort: 80

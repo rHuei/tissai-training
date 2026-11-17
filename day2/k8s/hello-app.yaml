@@ -1,0 +1,19 @@
+# envsubst < hello-app.yaml | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-${UNAME}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://<git-server>/k8s-training/day2-gitops.git   # 依實際 Git 伺服器調整
+    targetRevision: main
+    path: hello/overlays/lab
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${UNAME}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: hello
+      run: deployment
+  template:
+    metadata:
+      labels:
+        app: hello
+        run: deployment
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v5
+        command: ["python", "app.py"]
+        envFrom:
+        - configMapRef:
+            name: hello-env
+        # env:
+        # - name: NAME
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: hello-env
+        #       key: NAME
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet: {path: /, port: 80}
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet: {path: /, port: 80}
+          periodSeconds: 10
+

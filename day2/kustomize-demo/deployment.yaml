@@ -1,0 +1,26 @@
+# Day 1 的 hello-deployment：image 只寫 hello、沒寫 namespace，由 kustomization.yaml 填入
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello
+      run: deployment
+  template:
+    metadata:
+      labels:
+        app: hello
+        run: deployment
+    spec:
+      containers:
+      - name: hello
+        image: hello
+        command: ["python", "app.py"]
+        envFrom:
+        - configMapRef:
+            name: hello-env
+        ports:
+        - containerPort: 80

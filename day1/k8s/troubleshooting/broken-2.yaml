@@ -1,0 +1,18 @@
+# 題 2：容器一直重啟 → CrashLoopBackOff（v3 沒有 CMD，也沒寫 command）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: broken-2}
+  template:
+    metadata:
+      labels: {app: broken-2}
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v3          # 錯誤：v3 拿掉了 CMD，這裡又沒寫 command
+        ports:
+        - containerPort: 80

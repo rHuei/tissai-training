@@ -1,0 +1,30 @@
+# 題 4：Pod 都 Running，服務卻連不到 → Service selector 打錯，endpoints 是空的
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-4
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: broken-4}
+  template:
+    metadata:
+      labels: {app: broken-4}
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v3
+        command: ["python", "app.py"]
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broken-4
+spec:
+  selector:
+    app: broken4                         # 錯誤：少了一個「-」，選不到任何 Pod
+  ports:
+  - port: 4000
+    targetPort: 80

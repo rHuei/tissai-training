@@ -1,0 +1,17 @@
+# envsubst < root.yaml | kubectl apply -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-${UNAME}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://<git-server>/k8s-training/day2-gitops.git   # 依實際 Git 伺服器調整
+    targetRevision: main
+    path: apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}

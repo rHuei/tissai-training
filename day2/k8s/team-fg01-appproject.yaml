@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: team-fg01
+  namespace: argocd
+spec:
+  sourceRepos:
+  - https://<git-server>/k8s-training/*      # 依實際 Git 伺服器調整
+  destinations:
+  - server: https://kubernetes.default.svc
+    namespace: fg01
+  clusterResourceWhitelist: []
+  namespaceResourceBlacklist:
+  - group: rbac.authorization.k8s.io
+    kind: '*'

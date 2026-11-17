@@ -1,0 +1,29 @@
+# 題 3：跑一下就被殺 → OOMKilled（程式持續吃記憶體，超過 limit）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: broken-3}
+  template:
+    metadata:
+      labels: {app: broken-3}
+    spec:
+      containers:
+      - name: hello
+        image: harbor.tiss.internal/fg01/hello:v3
+        command:
+        - python
+        - -c
+        - |
+          import time
+          data = []
+          while True:
+              data.append(' ' * 10 * 1024 * 1024)   # 每秒多吃 10Mi
+              print(f'using {len(data) * 10} Mi', flush=True)
+              time.sleep(1)
+        resources:
+          requests: {memory: 32Mi}
+          limits:   {memory: 64Mi}        # 錯誤：程式用量會一路長到超過 64Mi

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-pod
+  labels:
+    app: hello
+    version: v3
+spec:
+  containers:
+  - name: hello
+    image: harbor.tiss.internal/fg01/hello:v3
+    command: ["python", "app.py"]
+    ports:
+    - containerPort: 80
